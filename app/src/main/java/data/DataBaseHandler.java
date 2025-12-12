@@ -6,11 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Car;
+import model.Student;
 import utils.Util;
 
 public class DataBaseHandler extends SQLiteOpenHelper {
@@ -20,11 +19,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_CARS_TABLE = "CREATE TABLE " + Util.TABLE_NAME + "(" +
-                Util.KEY_ID + " INTEGER PRIMARY KEY," +
-                Util.KEY_NAME + " TEXT," +
-                Util.KEY_PRICE + " TEXT" + ")";
-        db.execSQL(CREATE_CARS_TABLE);
+        String CREATE_STUDENTS_TABLE = "CREATE TABLE " + Util.TABLE_NAME + "(" +
+                Util.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                Util.KEY_FACULTY + " TEXT," +
+                Util.KEY_SECONDNAME + " TEXT," +
+                Util.KEY_FIRSTNAME + " TEXT," +
+                Util.KEY_AVERAGESCORE + " REAL" + ")";
+        db.execSQL(CREATE_STUDENTS_TABLE);
     }
 
     @Override
@@ -33,80 +34,87 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addCar(Car car) {
+
+    public void addStudent(Student student) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Util.KEY_NAME, car.getName());
-        contentValues.put(Util.KEY_PRICE, car.getPrice());
+        contentValues.put(Util.KEY_FACULTY, student.getFaculty());
+        contentValues.put(Util.KEY_SECONDNAME, student.getSecondName());
+        contentValues.put(Util.KEY_FIRSTNAME, student.getFirstName());
+        contentValues.put(Util.KEY_AVERAGESCORE, student.getAverageScore());
 
         db.insert(Util.TABLE_NAME, null, contentValues);
         db.close();
     }
 
-    public Car getCar(int id) {
+    public Student getStudent(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(Util.TABLE_NAME, new String[]{Util.KEY_ID, Util.KEY_NAME, Util.KEY_PRICE}, Util.KEY_ID + "=?", new String[]{String.valueOf(id)},
+        Cursor cursor = db.query(Util.TABLE_NAME, new String[]{Util.KEY_ID, Util.KEY_FACULTY, Util.KEY_SECONDNAME, Util.KEY_FIRSTNAME, Util.KEY_AVERAGESCORE}, Util.KEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null, null);
-        Car car = new Car();
+        Student student = new Student();
         if (cursor != null) {
             try {
             cursor.moveToFirst();
-            car = new Car(Integer.parseInt(cursor.getString(0)),
-                    cursor.getString(1), cursor.getString(2));
+            student = new Student(Integer.parseInt(cursor.getString(0)),
+                    cursor.getString(1), cursor.getString(2),
+                    cursor.getString(3), Double.parseDouble(cursor.getString(4)));
             } finally {
                 cursor.close();
+                db.close();
             }
         }
-        return car;
+        return student;
     }
 
-    public List<Car> getAllCars() {
+    public List<Student> getAllStudents() {
         SQLiteDatabase db = this.getReadableDatabase();
-        List<Car> cars = new ArrayList<>();
+        List<Student> students = new ArrayList<>();
         String selectAllCars = "SELECT * FROM " + Util.TABLE_NAME;
         Cursor cursor = db.rawQuery(selectAllCars, null);
         if (cursor.moveToFirst()) {
             try {
             do {
-                Car car = new Car();
-                car.setId(Integer.parseInt(cursor.getString(0)));
-                car.setName(cursor.getString(1));
-                car.setPrice(cursor.getString(2));
-                cars.add(car);
+                Student student = new Student();
+                student.setId(Integer.parseInt(cursor.getString(0)));
+                student.setFaculty(cursor.getString(1));
+                student.setSecondName(cursor.getString(2));
+                student.setFirstName(cursor.getString(3));
+                student.setAverageScore(Double.parseDouble(cursor.getString(4)));
+                students.add(student);
             } while (cursor.moveToNext());
         } finally {
                 cursor.close();
             }
             }
-        return cars;
+        return students;
     }
-    public int updateCar(Car car) {
+    public int updateStudents(Student student) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Util.KEY_NAME, car.getName());
-        contentValues.put(Util.KEY_PRICE, car.getPrice());
+        contentValues.put(Util.KEY_FACULTY, student.getFaculty());
+        contentValues.put(Util.KEY_SECONDNAME, student.getSecondName());
+        contentValues.put(Util.KEY_FIRSTNAME, student.getFirstName());
+        contentValues.put(Util.KEY_AVERAGESCORE, student.getAverageScore());
 
-        return db.update(Util.TABLE_NAME, contentValues, Util.KEY_ID + "=?", new String[] {String.valueOf(car.getId())});
+        return db.update(Util.TABLE_NAME, contentValues, Util.KEY_ID + "=?", new String[] {String.valueOf(student.getId())});
     }
-    public void deleteCar(Car car) {
+    public void deleteStudent(Student student) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(Util.TABLE_NAME, Util.KEY_ID + "=?", new String[] {String.valueOf(car.getId())});
+        db.delete(Util.TABLE_NAME, Util.KEY_ID + "=?", new String[] {String.valueOf(student.getId())});
         db.close();
     }
-    public int getCarsCount() {
+    public int getStudentsCount() {
         SQLiteDatabase db = this.getReadableDatabase();
-
         String countQuery = "SELECT * FROM " + Util.TABLE_NAME;
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = -1;
-        if (cursor != null) {
-            try {
-                count = cursor.getCount();
-            } finally {
-                cursor.close();
-            }
+        try {
+            count = cursor.getCount();
+        } finally {
+            cursor.close();
+            db.close();
         }
         return count;
     }

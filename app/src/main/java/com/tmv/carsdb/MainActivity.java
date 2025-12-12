@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.List;
 
 import data.DataBaseHandler;
-import model.Car;
+import model.Student;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,29 +26,19 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         DataBaseHandler dataBaseHandler = new DataBaseHandler(this);
-        Log.d("CarsCount:", String.valueOf(dataBaseHandler.getCarsCount()));
-//        dataBaseHandler.addCar(new Car("Toyota", "$30000)"));
-//        dataBaseHandler.addCar(new Car("Opel", "$25000)"));
-//        dataBaseHandler.addCar(new Car("Mercedes", "$50000)"));
-//        dataBaseHandler.addCar(new Car("Kia", "$28000)"));
-//        dataBaseHandler.addCar(new Car("Masda", "$30000)"));
-//        dataBaseHandler.addCar(new Car("Honda", "$25000)"));
-//        dataBaseHandler.addCar(new Car("Skoda", "$50000)"));
-//        dataBaseHandler.addCar(new Car("Hundai", "$28000)"));
+        dataBaseHandler.addStudent(new Student("Design", "Pupkin", "Ivan", 4.1));
+        dataBaseHandler.addStudent(new Student("Management", "Sidorov", "Sergey", 3.4));
+        dataBaseHandler.addStudent(new Student("ComputerScience", "Ivanov", "Pavel", 4.9));
+        dataBaseHandler.addStudent(new Student("Sports", "Lomakin", "Artur", 2.1));
+        dataBaseHandler.addStudent(new Student("Math", "Olenin", "Ruslan", 4.5));
 
-        List<Car> carList = dataBaseHandler.getAllCars();
-
-//        Car deletedCar = dataBaseHandler.getCar(7);
-//        dataBaseHandler.deleteCar(deletedCar);
-        for (Car car : carList) {
-            Log.d("Car Info: ", "ID " + car.getId() + ", name " + car.getName() + ", price  " + car.getPrice());
+        List<Student> studentList = dataBaseHandler.getAllStudents();
+        for (Student student : studentList) {
+            Log.d("Student Info: ", "ID " + student.getId() + ", faculty " + student.getFaculty()
+                    + ", secondName  " + student.getSecondName() + ", firstName " +
+                    student.getFirstName() + ", averageScore " + student.getAverageScore());
         }
-//        Car car = dataBaseHandler.getCar(1);
-//        car.setName("Tesla");
-//        car.setPrice("$50000");
-//        int updatedCarId = dataBaseHandler.updateCar(car);
-//        Log.d("Car Info: ", "ID " + car.getId() + ", name " + car.getName() + ", price  " + car.getPrice() + ", updatedCarId " + updatedCarId);
-
     }
 }
